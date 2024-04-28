@@ -28,7 +28,6 @@ namespace AlgoritmDeykstry
                                 ves[Pdestin[i]] = distance[disI, disJ];
                                 continue;
                             }
-                            ves[Pdestin[i]] = distance[disI, disJ]; i++; disJ++;
                         }  
                     }
                 }
