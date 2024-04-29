@@ -37,7 +37,7 @@ namespace AlgoritmDeykstry
                 topVisit[minInd] = true;
                 for (int j = 0; j < countIterations; j++)
                 {
-                    if (!topVisit[j] && graph[minInd,j] != 0 && distences[minInd] + graph[minInd,j] < distences[j])
+                    if (!topVisit[j] && graph[minInd,j] != 0 && distences[minInd] != int.MaxValue && distences[minInd] + graph[minInd,j] < distences[j])
                     {
                         distences[j] = distences[minInd] + graph[minInd, j];
                     }
