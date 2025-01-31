@@ -1,60 +1,129 @@
-﻿namespace AlgoritmDeykstry
+﻿using System.IO;
+using static AlgoritmDeykstry.ClassForMethodDeykstry;
+
+namespace AlgoritmDeykstry
 {
-    internal class Program
+    public class InvalidInputException : Exception
     {
+        public InvalidInputException(string message) : base(message) { }
+    }
+
+    public class FileReadException : Exception
+    {
+        public FileReadException(string message) : base(message) { }
+        public FileReadException(string message, Exception inner) : base(message, inner) { }
+    }
+
+    internal class Program
+    {        
         private static void Main(string[] args)
         {
-            ClassForMethodDeykstry algorithm = new ClassForMethodDeykstry();
-            Console.Write("Введите количество пунктов назначения: ");
-            int destin = int.Parse(Console.ReadLine());
-            Console.Write("Введите количество пунктов отправления: ");
-            int depar = int.Parse(Console.ReadLine());            
-            int[,] graph = new int[destin, depar];
-            int[] Pdestin = new int[destin];
-            int[] Pdepar = new int[depar];
-            for (int i = 0; i < Pdestin.Length; i++)
+            try
             {
-                Pdestin[i] = i;
+                ClassForMethodDeykstry algorithm = new ClassForMethodDeykstry();
+
+                int destinations = ReadInteger("Введите количество пунктов назначения: ");
+                int departures = ReadInteger("Введите количество пунктов отправления: ");
+
+                int[,] graph = new int[destinations, departures];
+                int[] destinationPoints = InitializeArray(destinations);
+                int[] departurePoints = InitializeArray(departures);
+
+                ReadGraphFromFile("Deyk.csv", graph);
+
+                PrintGraph(graph, destinationPoints, departurePoints);
+
+                algorithm.MethodDeykstry(graph);
             }
-            for (int j = 0; j < Pdepar.Length; j++)
+            catch (InvalidInputException ex)
             {
-                Pdepar[j] = j;
+                Console.WriteLine($"Ошибка ввода: {ex.Message}");
             }
-            using (StreamReader read = new StreamReader("Deyk.csv"))
+            catch (FileReadException ex)
             {
-                while (!read.EndOfStream)
+                Console.WriteLine($"Ошибка при чтении файла: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Произошла непредвиденная ошибка: {ex.Message}");
+            }
+
+        }
+
+        private static int ReadInteger(string message)
+        {
+            Console.Write(message);
+            if (!int.TryParse(Console.ReadLine(), out int result))
+            {
+                throw new InvalidInputException("Некорректный ввод числа.");
+            }
+            return result;
+        }
+
+        private static int[] InitializeArray(int size)
+        {
+            int[] array = new int[size];
+            for (int i = 0; i < size; i++)
+            {
+                array[i] = i;
+            }
+            return array;
+        }
+
+        private static void ReadGraphFromFile(string filePath, int[,] graph)
+        {
+            try
+            {
+                using StreamReader reader = new StreamReader(filePath);
+                for (int i = 0; i < graph.GetLength(0); i++)
                 {
-                    for (int i = 0; i < destin; i++)
+                    string? line = reader.ReadLine();
+                    if (line == null)
                     {
-                        string line = read.ReadLine();
-                        string[] str = line.Split(';');
-                        for (int j = 0; j < depar; j++)
+                        throw new FileReadException("Неожиданный конец файла.");
+                    }
+
+                    string[] values = line.Split(';');
+                    if (values.Length != graph.GetLength(1))
+                    {
+                        throw new FileReadException("Некорректное количество значений в строке.");
+                    }
+
+                    for (int j = 0; j < graph.GetLength(1); j++)
+                    {
+                        if (!int.TryParse(values[j], out graph[i, j]))
                         {
-                            graph[i, j] = int.Parse(str[j]);
+                            throw new FileReadException($"Ошибка преобразования данных в строке {i + 1} столбце {j + 1}.");
                         }
                     }
                 }
-            }            
-            Console.WriteLine("\nМатрица с исходными данными\n");
-            for (int i = 0; i < 1; i++)
-            {                
-                for (int j = 0; j < graph.GetLength(1); j++)
-                {
-                    Console.Write("\t");
-                    Console.Write(Pdestin[j]);                    
-                }
-                Console.WriteLine();
             }
+            catch (IOException ex)
+            {
+                throw new FileReadException("Ошибка доступа к файлу.", ex);
+            }
+        }
+
+        private static void PrintGraph(int[,] graph, int[] destinationPoints, int[] departurePoints)
+        {
+            Console.WriteLine("\nМатрица с исходными данными\n");
+
+            Console.Write("\t");
+            foreach (int point in destinationPoints)
+            {
+                Console.Write(point + "\t");
+            }
+            Console.WriteLine();
+
             for (int i = 0; i < graph.GetLength(0); i++)
             {
-                Console.Write(Pdepar[i] + "\t");
+                Console.Write(departurePoints[i] + "\t");
                 for (int j = 0; j < graph.GetLength(1); j++)
                 {
-                    Console.Write(graph[i, j] + "\t");                    
+                    Console.Write(graph[i, j] + "\t");
                 }
                 Console.WriteLine();
             }
-            algorithm.MethodDeykstry(graph);
         }
     }
 }

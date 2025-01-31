@@ -7,17 +7,12 @@ using System.Threading.Tasks;
 
 namespace AlgoritmDeykstry
 {
-    internal class ClassForMethodDeykstry
+    public class OutOfBoundsException : Exception
     {
-        public class InvalidInputException : Exception
-        {
-            public InvalidInputException(string message) : base(message) { }
-        }
-
-        public class OutOfBoundsException : Exception
-        {
-            public OutOfBoundsException(string message) : base(message) { }
-        }
+        public OutOfBoundsException(string message) : base(message) { }
+    }
+    internal class ClassForMethodDeykstry
+    {       
         public void MethodDeykstry(int[,] graph)
         {
             try
