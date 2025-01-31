@@ -2,9 +2,9 @@
 {
     internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            MDeyk mD = new MDeyk();
+            ClassForMethodDeykstry algorithm = new ClassForMethodDeykstry();
             Console.Write("Введите количество пунктов назначения: ");
             int destin = int.Parse(Console.ReadLine());
             Console.Write("Введите количество пунктов отправления: ");
@@ -54,7 +54,7 @@
                 }
                 Console.WriteLine();
             }
-            mD.Deyk(graph);
+            algorithm.MethodDeykstry(graph);
         }
     }
 }
